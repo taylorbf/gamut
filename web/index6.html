@@ -22,7 +22,9 @@ function rf(min, max) {
     min = 0;
   }
   return function() {
-    return Math.random() * (max - min) + min;
+    var _max = getValue(max)
+    var _min = getValue(min)
+    return Math.random() * (_max - _min) + _min;
   };
 }
 
@@ -32,50 +34,102 @@ function ri(min, max) {
     min = 0;
   }
   return function() {
-    return Math.floor( Math.random() * ((max+1) - min) + min );
+    var _max = getValue(max)
+    var _min = getValue(min)
+    return Math.floor( Math.random() * ((_max+1) - _min) + _min );
   };
 }
 
 // interpolate between two numbers over several steps.
 // hang out at the `end` value once it is reached unless it repeats.
 
-function counter(start, end, iterations, repeat) {
+function count(start, end, step, repeat) {
   // safeguard against bad usage by returning zero
-  if(start === undefined || end === undefined || !iterations) {
+  if(start === undefined || end === undefined) {
     return function() { return 0; };
   }
+  step = step || 1;
   if (repeat!==false) {
     repeat = true;
   }
-
-  iterations--;
-  var current = -1;
+  var current = false;
+  var _start, _end, _step, direction;
   return function() {
-    if(current === iterations && !repeat) {
-      return start + (current * ( (end - start) / iterations ));
-    } else if(current === iterations && repeat) {
-      current = -1;
+    if (current===false) {
+      _start = getValue(start)
+      _end = getValue(end)
+      _step = getValue(step)
+      direction = _start < _end ? 1 : -1;
+      current = _start
+    } else {
+      current += _step * direction;
     }
-    current++;
-    return start + (current * ( (end - start) / iterations ));
+    var _current = current
+    if (direction>0) {
+      if (current >= _end) {
+        current = false;
+        _current = _end
+      }
+    } else {
+      if (current <= end) {
+        current = false;
+        _current = _end
+      }
+    }
+    return _current;
   };
 }
 
-function bounce(start, end, iterations) {
-  if(start === undefined || end === undefined || !iterations) {
+/*
+
+if(current === iterations && !repeat) {
+  return start + (current * ( (end - start) / iterations ));
+} else if(current === iterations && repeat) {
+
+  current = -1;
+}
+*/
+function bounce(start, end, step) {
+  // safeguard against bad usage by returning zero
+  if(start === undefined || end === undefined) {
     return function() { return 0; };
   }
+  step = step || 1;
 
-  iterations--;
-  var current = 0;
-  var direction = -1;
+  var current = false;
+  var _start, _end, _step, direction;
+
   return function() {
-    var result = start + (current * ( (end - start) / iterations ));
-    if(current === 0 || current === iterations ) {
-      direction *= -1;
+    if (current===false) {
+      _start = getValue(start)
+      _end = getValue(end)
+      _step = getValue(step)
+      direction = _start <= _end ? 1 : -1
+      current = _start
+    } else {
+      current += _step * direction;
     }
-    current += direction;
-    return result;
+    var _current = current
+    if (_start<=_end) {
+      if (current >= _end && direction == 1) {
+        _current = _end
+        direction *= -1
+      } else if (current <= _start && direction == -1) {
+        current = false;
+        _current = _start
+        direction *= -1
+      }
+    } else {
+      if (current <= end && direction == -1) {
+        _current = _end
+        direction *= -1
+      }else if (current >= _start && direction == 1) {
+        current = false;
+        _current = _start
+        direction *= -1
+      }
+    }
+    return _current;
   };
 }
 
@@ -86,7 +140,7 @@ function pick() {
   var items = parseArguments(arguments);
 
   return function() {
-    return items[ Math.floor( Math.random() * items.length ) ];
+    return getValue( items[ Math.floor( Math.random() * items.length ) ] );
   };
 }
 
@@ -104,7 +158,6 @@ PARSE ARGUMENTS
 // new method of array flattening
 function parseArguments(args) {
   args = Array.prototype.slice.call(args);
-  console.log(args);
   //var flattened = [];
   //args.forEach( function(item) {
   //  flattened = flattened.concat( item );
@@ -113,9 +166,27 @@ function parseArguments(args) {
   return args;
 }
 
-function getValue() {
+function getValue(v) {
+
+  var value = false;
+
+	if(typeof v === 'function') {
+    value = v();
+  } else if (Array.isArray(v)){
+    value = []
+    v.forEach(function(preval) {
+      value.push( getValue(preval) )
+    })
+  } else {
+    value = v;
+  }
+  return value
 
 }
+
+var x = bounce(0,10,2)
+console.log( getValue(x) )
+
 
 
 
@@ -281,13 +352,13 @@ var Sound = function() {
 Sound.prototype.next = function() {
   if (this.before>0) {
     this.before--;
-    console.log("before",this.before)
     return false;
   }
   if (this.after>0) {
     this.after--;
-    console.log("after",this.after)
-    if (this.after==0) {
+    console.log(this.after)
+    if (this.after==1) {
+      console.log("done")
       this.done();
     }
     return false;
@@ -306,7 +377,6 @@ Sound.prototype.next = function() {
       note = [note];
     }
     var beats = this.beats.next();
-    console.log(beats);
     var vel = this.velocities.next();
     var dur = this.durations.next();
     this.wait += (beats-1);
@@ -420,6 +490,9 @@ Sound.prototype.load = function(settings) {
     this.pattern = new Cycle( patt );
     this.pattern.done = function() {
       this.after = this.afterGen.next() + this.beats.next() - 1;
+      if(this.after == 0) {
+        this.done()
+      }
     }
     this.pattern.done = this.pattern.done.bind(this)
 
@@ -486,6 +559,7 @@ Queue.prototype.update = function() {
 }
 
 Queue.prototype.createSound = function() {
+  console.log("creating sound!")
   this.sound = new Sound()
   this.sound.load( this.pattern.next() );
   this.sound.done = this.createSound.bind(this);
@@ -529,7 +603,7 @@ for (var i=0;i<numberOfQueues;i++) {
 // DEMO
 //
 
-a = sound( [1,11] ).dur(rf(0,2)).beat(1).after(ri(70))
+a = sound( bounce(0,10,3) ).rep(ri(5,20)).vol( bounce(0,1,0.1) ).after(50).dur(0.2)
 queue[0](a);
 
 
