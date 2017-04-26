@@ -7,12 +7,14 @@ outlets = 1
 function anything() {
 	var arr = arrayfromargs(arguments);
 	post(messagename);
+	post('\n')
 	//post('\n')
 	//post(arguments.join(" "));
 	try {
 		eval(messagename)
 	} catch (e) {
 		post(e);
+		post('\n')
 	}
 }
 
@@ -366,7 +368,7 @@ Sound.prototype.next = function() {
   }
   if (this.after>0) {
     this.after--;
-    if (this.after==1) {
+    if (this.after==0) {
       this.done();
     }
     return false;
@@ -567,8 +569,13 @@ Queue.prototype.update = function() {
 }
 
 Queue.prototype.createSound = function() {
+	post("next in queue\n")
+	var nextsound = this.pattern.next()
+	if (!nextsound) {
+		nextsound = sound()
+	}
   this.sound = new Sound()
-  this.sound.load( this.pattern.next() );
+  this.sound.load( nextsound );
   this.sound.done = this.createSound.bind(this);
 }
 
@@ -609,20 +616,18 @@ for (var i=0;i<numberOfQueues;i++) {
 
 function bang() {
 	for (var i=0;i<Queues.length;i++) {
-		if (Queues[i].pattern) {
-			if (Queues[i].pattern.pattern.length) {
+		if (Queues[i].pattern.pattern.length) {
 
-	      var note = Queues[i].next()
-	      if (note) {
-	        var vel = note[1]
-	        var dur = note[2]
-	        note[0].forEach(function(thisnote) {
-						thisnote = getValue(thisnote);
-						outlet(0, [ thisnote, dur, vel ] )
-	        })
-	      }
+      var note = Queues[i].next()
+      if (note) {
+        var vel = note[1]
+        var dur = note[2]
+        note[0].forEach(function(thisnote) {
+					thisnote = getValue(thisnote);
+					outlet(0, [ thisnote, dur, vel ] )
+        })
+      }
 
-			}
 		}
 	}
 }

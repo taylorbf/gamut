@@ -11,7 +11,6 @@ function msg_int(v) {
 	var scaleIndex = v%12;
 	var ratio = tuning[scaleIndex] * octaveMultiplier;
 	var frequency = ratio * middleC;
-	post(tuning[scaleIndex] + '\n')
 	outlet(0, frequency);
 	outlet(1, ratio);
 }

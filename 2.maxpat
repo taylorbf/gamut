@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 55.0, 80.0, 672.0, 669.0 ],
+		"rect" : [ 16.0, 79.0, 770.0, 681.0 ],
 		"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
@@ -84,7 +84,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1047.0, 1247.0, 50.0, 22.0 ],
 					"style" : "",
-					"text" : "40"
+					"text" : "50"
 				}
 
 			}
@@ -715,7 +715,7 @@
 					"outlettype" : [ "list", "float", "float", "float", "float", "list", "int" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 1180.0, 1439.5, 360.0, 155.0 ],
-					"setfilter" : [ 0, 1, 0, 0, 0, 1223.0, 1.0, 0.5, 0.0001, 22050.0, 0.0001, 16.0, 0.5, 25.0 ],
+					"setfilter" : [ 0, 1, 0, 0, 0, 929.0, 1.0, 0.5, 0.0001, 22050.0, 0.0001, 16.0, 0.5, 25.0 ],
 					"style" : "",
 					"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 				}
@@ -801,6 +801,7 @@
 			}
 , 			{
 				"box" : 				{
+					"fontface" : 0,
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-62",
@@ -808,7 +809,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 974.0, 1340.0, 125.0, 22.0 ],
+					"patching_rect" : [ 974.0, 1340.0, 131.0, 22.0 ],
 					"style" : "",
 					"text" : "poly~ multisample 60"
 				}
@@ -857,13 +858,13 @@
 , 			{
 				"box" : 				{
 					"fontname" : "Arial",
-					"fontsize" : 12.0,
+					"fontsize" : 20.0,
 					"id" : "obj-151",
 					"linecount" : 5,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 83.0, 1255.0, 212.0, 74.0 ],
+					"patching_rect" : [ 83.0, 1255.0, 349.0, 118.0 ],
 					"style" : "",
 					"text" : "notes:\n- maybe it reports what line is the error\n- hook up volume and dur\n- queue tempo, stop, start, mute, etc"
 				}
@@ -945,8 +946,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 86.0, 34.0, 434.0, 47.0 ],
 					"style" : "",
-					"text" : "Dreams of Massachusetts",
-					"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
+					"text" : "Dreams of Massachusetts"
 				}
 
 			}
