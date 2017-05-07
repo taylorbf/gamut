@@ -88,13 +88,22 @@ function count(start, end, step, repeat) {
     var _current = current
     if (direction>0) {
       if (current >= _end) {
-        current = false;
-        _current = _end
+				if (repeat) {
+	        current = false;
+					_current = _end
+				} else {
+					current -= _step * direction;
+				}
+
       }
     } else {
       if (current <= end) {
-        current = false;
-        _current = _end
+				if (repeat) {
+        	current = false;
+        	_current = _end
+				} else {
+					current -= _step * direction;
+				}
       }
     }
     return _current;
@@ -164,6 +173,93 @@ function pick() {
     return getValue( items[ Math.floor( Math.random() * items.length ) ] );
   };
 }
+
+
+function ramp(destination, step) {
+  // safeguard against bad usage by returning zero
+  if(destination === undefined) {
+    return function() { return 0; };
+  }
+  step = step || 1;
+  var current = false;
+  var _destination, _step, direction;
+  return function() {
+    if (current===false) {
+      _start = getValue(start)
+      _end = getValue(end)
+      _step = getValue(step)
+      direction = _start < _end ? 1 : -1;
+      current = _start
+    } else {
+      current += _step * direction;
+    }
+    var _current = current
+    if (direction>0) {
+      if (current >= _end) {
+        current = false;
+        _current = _end
+      }
+    } else {
+      if (current <= end) {
+        current = false;
+        _current = _end
+      }
+    }
+    return _current;
+  };
+}
+
+
+
+function sine(min, max, steps) {
+  // safeguard against bad usage by returning zero
+  if(min === undefined || max === undefined || steps === undefined) {
+    return function() { return 0; };
+  }
+
+  var restart = true;
+
+	var pattern = []
+
+	var _min, _max, _steps;
+
+	var counter;
+
+  return function() {
+    if (restart===true) {
+
+			_steps = getValue(steps)
+
+			_min = getValue(min);
+			_max = getValue(max);
+
+			if (_steps < 1) {
+				_steps = 1
+			} else if (_steps > 100) {
+				_steps = 100
+			}
+
+			for (var i=0;i<_steps;i++) {
+				var raw = ((Math.sin( (i/_steps)*Math.PI*2 )/2)+0.5)
+				var value = raw * (_max-_min) + _min;
+				value = Math.round(value);
+				pattern.push(value)
+			}
+
+			counter = count(0,_steps,1)
+			restart = false;
+
+    }
+		var index = getValue(counter);
+		var _current = pattern[ index ];
+    if (index >= _steps-1) {
+      restart = true;
+    }
+    return _current;
+  };
+}
+
+
 
 // new gens...
 // cycle(1,2) or pattern(1,2,3)
