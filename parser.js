@@ -1,6 +1,6 @@
 
 inlets = 1
-outlets = 1
+outlets = 3
 
 
 
@@ -8,11 +8,10 @@ function anything() {
 	var arr = arrayfromargs(arguments);
 	post(messagename);
 	post('\n')
-	//post('\n')
-	//post(arguments.join(" "));
 	try {
 		eval(messagename)
 	} catch (e) {
+		outlet(2,1);
 		post(e);
 		post('\n')
 	}
@@ -22,6 +21,13 @@ function clear() {
 	queue.forEach(function(thisqueue) {
 		thisqueue();
 	})
+}
+
+
+var _ms = 200;
+
+function ms(time) {
+	_ms = time
 }
 
 // ============================================================
@@ -569,7 +575,6 @@ Queue.prototype.update = function() {
 }
 
 Queue.prototype.createSound = function() {
-	post("next in queue\n")
 	var nextsound = this.pattern.next()
 	if (!nextsound) {
 		nextsound = sound()
@@ -615,16 +620,21 @@ for (var i=0;i<numberOfQueues;i++) {
 
 
 function bang() {
+
+	outlet(1, getValue(_ms) );
+
 	for (var i=0;i<Queues.length;i++) {
 		if (Queues[i].pattern.pattern.length) {
 
       var note = Queues[i].next()
+
       if (note) {
         var vel = note[1]
         var dur = note[2]
         note[0].forEach(function(thisnote) {
 					thisnote = getValue(thisnote);
-					outlet(0, [ thisnote, dur, vel ] )
+
+					outlet(0, [ thisnote, vel, dur] )
         })
       }
 

@@ -17,13 +17,34 @@ body {
   transition: background-color 0.5s ease;
 }
 </style>
+<script src="/socket.io/socket.io.js"></script>
+  <script>
+  window.onload = function () {
+    // Connect to socket.io
+    socket = io.connect();
+
+
+
+    // React to a received message
+    socket.on('ping', function (data) {
+
+      // Modify the DOM to show the message
+    //  document.getElementById("msg").innerHTML = data.msg;
+
+      // Send a message back to the server
+    //  socket.emit('pong', {
+    //    msg: "The web browser also knows socket.io."
+    //  });
+    });
+  };
+  </script>
 <script>
 
   var element = document.getElementById('editor')
   var editor = CodeMirror(element, {
     value: "a = sound(1,2,3)\n\nqueue[0](a)",
     mode:  "javascript",
-  //  theme: "mbo",
+    theme: "mbo",
     matchBrackets: false,
     autoCloseBrackets: true
   });
@@ -34,8 +55,11 @@ body {
       var code = editor.getValue().split("\n")
       code.forEach(function(line) {
         if (line) {
+          socket.emit('code', {
+            msg: line
+          });
           //  console.log(line)
-         window.max.outlet(line);
+    //     window.max.outlet(line);
     //      anything(line)
         }
       })
@@ -54,6 +78,4 @@ body {
 
 
 </script>
-<script src="../parser.js"></script>
-
 </html>
