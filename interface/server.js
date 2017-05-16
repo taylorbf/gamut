@@ -34,6 +34,11 @@ io.sockets.on('connection', function (socket) {
     console.log(data.msg);
     client.send("/code", data.msg);
   });
+  // Print messages from the client.
+  socket.on('compile', function (data) {
+    console.log(data.msg);
+    client.send("/compile", data.msg);
+  });
 
 
 });

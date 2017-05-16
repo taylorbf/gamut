@@ -50,6 +50,7 @@ body {
   });
 
   editor.on('keydown',function(ed,e) {
+    console.log(e.keyCode);
     if (e.shiftKey && e.keyCode===13) {
 
       var code = editor.getValue().split("\n")
@@ -72,6 +73,13 @@ body {
         document.body.style.transition = "background-color 0.5s ease";
         document.body.style.backgroundColor = "#111";
       },30)
+    }
+    else if (e.keyCode===192) {
+      socket.emit('compile', {
+        msg: 1
+      });
+      e.preventDefault();
+      e.stopPropagation();
     }
 
   })

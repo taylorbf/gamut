@@ -18,11 +18,13 @@ function anything() {
 }
 
 function clear() {
-	queue.forEach(function(thisqueue) {
-		thisqueue();
-	})
+	for (var i=0;i<queue.length;i++) {
+		queue[i]();
+	}
+	//queue.forEach(function(thisqueue) {
+	//	thisqueue();
+	//})
 }
-
 
 var _ms = 200;
 
@@ -119,7 +121,7 @@ if(current === iterations && !repeat) {
   current = -1;
 }
 */
-function bounce(start, end, step) {
+function tri(start, end, step) {
   // safeguard against bad usage by returning zero
   if(start === undefined || end === undefined) {
     return function() { return 0; };
@@ -320,22 +322,26 @@ var Cycle = function(pattern) {
 }
 
 Cycle.prototype.next = function() {
-	this.position += this.direction;
-  var previous = this.position;
-  this.position %= this.pattern.length;
+	try {
+		this.position += this.direction;
+	  var previous = this.position;
+	  this.position %= this.pattern.length;
 
-	if(typeof this.pattern[this.position] === 'function') {
-      this.value = this.pattern[this.position]();
-  } else {
-    this.value = this.pattern[this.position];
-  }
+		if(typeof this.pattern[this.position] === 'function') {
+	      this.value = this.pattern[this.position]();
+	  } else {
+	    this.value = this.pattern[this.position];
+	  }
 
-  if (this.position===this.pattern.length-1) {
-    //this.render();
-  	this.done();
-  }
+	  if (this.position===this.pattern.length-1) {
+	    //this.render();
+	  	this.done();
+	  }
 
-	return this.value;
+		return this.value;
+	} catch(e) {
+
+	}
 }
 
 Cycle.prototype.update = function(values) {
@@ -359,7 +365,7 @@ Cycle.prototype.done = function() { }
 function SoundDescription(args) {
   this.pattern = parseArguments(args)
   this.velocities = [1]
-  this.durations = [1]
+  this.durations = [100]
   this._beats = [1]
   this._after = [0]
   this._before = [0]
@@ -439,7 +445,7 @@ function sound() {
 }
 
 
-
+var silence = sound();
 
 
 
@@ -638,6 +644,8 @@ function Queue() {
 
 Queue.prototype.update = function() {
 
+	// test for undefined ones... and don't use them.
+
   var sounds = parseArguments(arguments)
   /*var newsounds = []
   for (var i=0;i<sounds.length;i++) {
@@ -646,8 +654,29 @@ Queue.prototype.update = function() {
     newsounds.push(newsound);
   } */
 
-	this.pattern.update( sounds );
-  var self = this;
+	 post("====")
+	 post(sounds.length)
+	 var faulty = false;
+	 for (var i=0;i<sounds.length;i++) {
+		post(sounds[i].constructor == SoundDescription);
+ 		// post(typeof sounds[i] != "function");
+		if (sounds[i].constructor != SoundDescription && typeof sounds[i] != "function") {
+			faulty = true;
+		}
+		//if (sounds[i] == undefined) {
+		//	return;
+		//}
+		//if (sounds[i].)
+	 }
+	 if (!faulty) {
+	   post("\n updating pattern \n");
+		 this.pattern.update( sounds );
+	 	 if (!this.sound) {
+	 		 this.createSound();
+	 	 }
+	 }
+
+  	//var self = this;
 
 	// this.pattern is a cycle of Sound objects
 	// this.pattern.pattern is the actual array of Sound objects
@@ -664,9 +693,7 @@ Queue.prototype.update = function() {
   } */
 
   // IF the queue just started, move to the first sound
-  if (!this.sound) {
-    this.createSound();
-  }
+
 
 }
 
@@ -720,20 +747,24 @@ function bang() {
 	outlet(1, getValue(_ms) );
 
 	for (var i=0;i<Queues.length;i++) {
-		if (Queues[i].pattern.pattern.length) {
+		try {
+			if (Queues[i].pattern.pattern.length) {
 
-      var note = Queues[i].next()
+	      var note = Queues[i].next()
 
-      if (note) {
-        var vel = note[1]
-        var dur = note[2]
-        note[0].forEach(function(thisnote) {
-					thisnote = getValue(thisnote);
+	      if (note) {
+	        var vel = note[1]
+	        var dur = note[2]
+	        note[0].forEach(function(thisnote) {
+						thisnote = getValue(thisnote);
 
-					outlet(0, [ thisnote, vel, dur] )
-        })
-      }
+						outlet(0, [ thisnote, vel, dur] )
+	        })
+	      }
 
+			}
+		} catch(e) {
+			post('PROBLEM\n')
 		}
 	}
 }
