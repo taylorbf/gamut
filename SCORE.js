@@ -58,7 +58,7 @@ ms(100)
 
 //Count 7-8-9
 // + 4 bass
-
+// transition
 
 a = sound(7).dur(0).vol(0).rep(ri(20)).after(ri(0,20))
 b = sound(7,8,9)
@@ -100,11 +100,11 @@ ms(tri(100,150,1))
 
 //
 a = sound(pick(0,4,7)).dur(1).vol(0.2).rep(ri(10))
-b = sound([7,8,9]).after(ri(20,60)).dur(20)
-c = sound(count(4,9,1)).vol(0.8).rep(5)
+b = sound([4,7,8,9]).after(ri(20,40))
+c = sound(count(4,9,1)).vol(0.8).rep(ri(5))
 d = sound(5).after(10)
 
-queue[0](pick(a,c,d))
+queue[0](pick(a,b,c,d))
 queue[1]()
 queue[2]()
 queue[3]()
@@ -113,28 +113,30 @@ ms(bounce(120,70,10))
 
 
 
-
-
+//TRANSFORM to secret garden
 /* SECTION
 Secret Garden
 Wandering baseline
 */
 
-// 3rd: low notes
-a = sound(ri(1,4)).after(ri(20,40))
 
 // 1st: gamut
-b = sound(6).dur(0).vol(1).after(20)
-c = sound(7,8).rev(pick(0,1)).vol(0.7).after(ri(20))
-d = sound(7).vol(0.8).rep(ri(10)).after(20)
-e = sound([3,4]).vol(0.8).after(30)
+a = sound(6).dur(0).vol(1).after(20)
+b = sound(7,8).rev(pick(0,1)).vol(0.7).after(ri(20))
+c = sound(7).vol(0.8).rep(ri(10)).after(20)
+d = sound([3,4]).vol(0.8).after(30)
 
 // 2nd: pattern
-g = sound(sine(4,8,5)).vol(tri(0.2,0.9))
+e = sound(sine(4,8,5)).vol(tri(0.2,0.9))
 
-queue[0](a)
-queue[1](pick(b,c,d,e))
-queue[2](g)
+// 3rd: low notes
+f = sound(ri(1,4)).after(ri(20,40))
+
+
+
+queue[0](pick(a,b,c,d))
+queue[1](e)
+queue[2](f)
 
 ms(bounce(150,100,1))
 
@@ -157,6 +159,18 @@ queue[2]()
 ms(120)
 
 ====
+
+h = sound(4,9).after(0).vol(0.7)
+i = sound(5).dur(1).after(ri(40,80))
+j = sound(2,8).after(0).vol(0.7)
+k = sound(sine(4,8,7)).vol(tri(1,0.8))
+
+queue[0](h,j)
+queue[1](k)
+queue[2]()
+queue[3]()
+
+ms(tri(100,150,10))
 
 
 
@@ -238,4 +252,23 @@ a = sound(pick(0,4,7)).dur(1).vol(0.2).rep(ri(10))
  queue[2]()
  queue[3]()
 
- ms(bounce(120,70,10))
+ ms(tri(120,70,10))
+
+
+ // structure
+ //
+// sines:
+// intro section: sine(5,9,ri(4,7))
+// garden section: sine(4,9,7)
+// last section: sine(4,8,7)
+
+// sections: buzz, [789], (789), [4789], garden, 4-9, 4928+sine, count
+//
+//
+//
+//
+//
+//
+//
+//
+//

@@ -50,7 +50,6 @@ body {
   });
 
   editor.on('keydown',function(ed,e) {
-    console.log(e.keyCode);
     if (e.shiftKey && e.keyCode===13) {
 
       var code = editor.getValue().split("\n")
@@ -81,9 +80,16 @@ body {
       e.preventDefault();
       e.stopPropagation();
     }
-
   })
 
 
 </script>
+
+<style>
+
+.cm-s-mbo.CodeMirror, .CodeMirror {
+  background: transparent;
+}
+
+</style>
 </html>
